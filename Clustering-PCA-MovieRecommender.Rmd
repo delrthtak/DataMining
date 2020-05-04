@@ -1,0 +1,364 @@
+---
+title: "Homework 3"
+output: 
+  html_notebook:
+  toc: yes
+toc_float: yes
+author: Kaitlyn Krupa 
+        Illinois Institute of Technology
+---
+
+###Libraries
+```{r}
+library(dplyr)
+library(factoextra)
+library(NbClust)
+```
+
+### Part 2.1 Hierarchical Clustering
+```{r}
+set.seed(1122)
+
+buddy.df <- read.csv("buddymove_holidayiq.csv", row.names = 1)
+bud_scale <- as.data.frame(scale(buddy.df))
+
+bud_sample <- sample_n(bud_scale, 50)
+```
+
+### Part 2.1-a
+```{r}
+clust_single <- eclust(bud_sample, "hclust", k = 1, hc_method = "single")
+fviz_dend(clust_single, main = "Linkage: Single", k_colors = "Blues", xlab="User ID")
+
+clust_complete <- eclust(bud_sample, "hclust", k = 1, hc_method = "complete")
+fviz_dend(clust_complete, main = "Linkage: Complete", k_colors = "Blues", xlab="User ID")
+
+clust_average <- eclust(bud_sample, "hclust", k = 1, hc_method = "average")
+fviz_dend(clust_average, main = "Linkage: Average", k_colors = "Blues", xlab="User ID")
+```
+
+### Part 2.1-b
+```{r}
+print("Two-singleton clusters for Single Linkage: 12 and 46, 3 and 8, 6 and 35, 4 and 49, 24 and 41, 11 and 36, 20 and 29, 19 and 50, 2 and 7, 21 and 42, 44 and 45, 31 and 48, 26 and 30, 18 and 39, 5 and 43, 16 and 25. 16 total.")
+print("Two-singleton clusters for Complete Linkage: 12 and 46, 44 and 45, 2 and 7, 19 and 50, 20 and 29, 18 and 39, 24 and 41, 11 and 36, 14 and 47, 16 and 25, 31 and 48, 26 and 30, 5 and 43, 3 and 8, 6 and 35, 4 and 49, 21 and 42, 13 and 28. 18 total.")
+print("Two-singleton clusters for Average Linkage: 3 and 8, 6 and 35, 12 and 46, 2 and 7, 44 and 45, 15 and 33, 20 and 29, 19 and 50, 24 and 41, 11 and 36, 18 and 39, 14 and 47, 16 and 25, 13 and 28, 21 and 42, 4 and 49, 5 and 43, 31 and 48, 26 and 30. 19 total.")
+print("The three different types of linkage still lead to relatively similar plots. By looking at the three lists above you will notice that there are quite a few pairs that show up in more than one list.")
+```
+
+### Part 2.1-c
+```{r}
+print("The linkage strategy that produced the least two-singleton clusters is Single, therefore we will consider it pure.")
+```
+
+### Part 2.1-d 
+```{r}
+clust_sing <- eclust(bud_sample, "hclust", k =1, hc_method = "single")
+plot(clust_sing, hang = -1, main = "Linkage: Single", xlab="User ID")
+abline(h=1.7)
+print("There would be three clusters.")
+```
+
+### Part 2.1-e
+```{r}
+clust_3single <- eclust(bud_sample, "hclust", k = 3, hc_method = "single")
+fviz_dend(clust_3single, main = "Linkage: Single", k_colors = "Blues", xlab="User ID")
+fviz_silhouette(clust_3single)
+print(clust_3single$silinfo)
+
+clust_3complete <- eclust(bud_sample, "hclust", k = 3, hc_method = "complete")
+fviz_dend(clust_3complete, main = "Linkage: Complete", k_colors = "Blues", xlab="User ID")
+fviz_silhouette(clust_3complete)
+print(clust_3complete$silinfo)
+
+clust_3average <- eclust(bud_sample, "hclust", k = 3, hc_method = "average")
+fviz_dend(clust_3average, main = "Linkage: Average", k_colors = "Blues", xlab="User ID")
+fviz_silhouette(clust_3average)
+print(clust_3average$silinfo)
+
+print("The Silhouette index for Single Link is 0.24, for Complete Link is 0.28, and for Average Link is 0.27.")
+```
+
+### Part 2.1-f
+```{r}
+nb_single <- NbClust(bud_sample, method="single")
+nb_complete <- NbClust(bud_sample, method="complete")
+nb_average <- NbClust(bud_sample, method="average")
+```
+
+### Part 2.1-g
+```{r}
+clust_2single <- eclust(bud_sample, "hclust", k = 2, hc_method = "single")
+fviz_dend(clust_2single, main = "Linkage: Single", k_colors = "Blues", xlab="User ID")
+fviz_silhouette(clust_2single)
+print(clust_2single$silinfo)
+
+clust_3complete <- eclust(bud_sample, "hclust", k = 3, hc_method = "complete")
+fviz_dend(clust_3complete, main = "Linkage: Complete", k_colors = "Blues", xlab="User ID")
+fviz_silhouette(clust_3complete)
+print(clust_3complete$silinfo)
+
+clust_6average <- eclust(bud_sample, "hclust", k = 6, hc_method = "average")
+fviz_dend(clust_6average, main = "Linkage: Average", k_colors = "Blues", xlab="User ID")
+fviz_silhouette(clust_6average)
+print(clust_6average$silinfo)
+
+print("The Silhouette index for Single Link is 0.24, for Complete Link is 0.28, and for Average Link is 0.31.")
+```
+
+### Part 2.1-h
+```{r}
+print("The Silhouette index based on purity for Single Link is 0.24, for Complete Link is 0.28, and for Average Link is 0.27.")
+print("The Silhouette index based on NbClust() for Single Link is 0.24, for Complete Link is 0.28, and for Average Link is 0.31.")
+print("For the purity strategy, the Complete Link is the best Linkage. For the NbClust() strategy, the Average Link is the best, better than the purity-Complete combo. They're not too far off from one another, which makes sense to me because from my last attempt to cluster the data, it didn't seem like there was a great way way to cluster the data, just good enough, which is what the Silhouette indices reflects.")
+```
+
+### Part 2.2 Principal Component Analysis
+```{r}
+countries <- read.csv("countries.csv", row.names = 1)
+tree <- as.data.frame(countries)
+```
+
+### Part 2.2-a-i
+```{r}
+print(summary(tree))
+```
+
+### Part 2.2-a-ii
+```{r}
+boxplot(tree$GDP, main="GDP Boxplot", col="purple")
+boxplot(tree$HIV, main="HIV Boxplot", col="purple")
+boxplot(tree$Lifeexp, main="Lifeexp Boxplot", col="purple")
+boxplot(tree$Oilcons, main="Oilcons Boxplot", col="purple")
+boxplot(tree$Pop, main="Pop Boxplot", col="purple")
+boxplot(tree$Tel, main="Tel Boxplot", col="purple")
+print("The Two outliers in the Pop Boxplot represent two countries with very great populations, specifically India and China.")
+```
+
+### Part 2.2-b
+```{r}
+tree.pca <- prcomp(tree, center = TRUE, scale. = TRUE)
+```
+
+(c) (i) Print the summary of the PCA object. How many components explain at least 90% of the variance?
+(ii) Draw a screeplot of the PCA object.
+(iii) Based on the screeplot, how many components would you use for modeling if you were to engage in a
+feature reduction task?
+### Part 2.2-c-i
+```{r}
+print(summary(tree.pca))
+print("You would need at least four PCs to explain at least 90% of te variance.")
+```
+
+### Part 2.2-c-ii
+```{r}
+fviz_screeplot(tree.pca, barfill="pink", barcolor="black")
+```
+
+### Part 2.2-c-iii
+```{r}
+print("Based on the screeplot, it looks like the first four or five components would be useful for modeling because the last four explain roughly less than 5% individually. There is also a relatively sharp drop from the percent explained between 4 and 5, afterwards it flattens out. ")
+```
+
+### Part 2.2-d-i
+```{r}
+print(tree.pca$rotation)
+print("PC1 is positively correlated with GDP, Lifeexp, Oilcons, and Tel. PC1 is negatively associated with HIV, Mil, Pop, and Uneml.")
+```
+
+### Part 2.2-d-ii
+```{r}
+print("PC2 is positively correlated with GDP, Lifeexp, Mil, Oilcons, Pop, and Tel. PC2 is negatively associated with HIV and Unempl.")
+print("I expect that the values of PC2 are grouped closely together and will be useful for creating predictions.")
+```
+
+### Part 2.2-e-i
+```{r}
+biplot(tree.pca)
+xtree <- as.data.frame(tree.pca$x)
+xtree12 <- xtree[1:2]
+xtree123 <- xtree12[c("Brazil", "UK", "Japan"),]
+print(xtree123)
+```
+### Part 2.2-e-ii
+```{r}
+print("
+In GDP: Brazil is 12th, UK is 5th, Japan is 3rd. 
+In HIV: Brazil is 4th, UK is 10th, Japan is 11th. 
+In Life Expectancy: Brazil is 12th, UK is 7th, Japan is 1st. 
+*In Military Spending: Brazil is 7th, UK is 9th, Japan is 14th. 
+In  Oil Consumed: Brazil is 12th, UK is 9th, Japan is 4th. 
+*In Population: Brazil is 5th, UK is 11th, Japan is 7th. 
+In Telephone Lines: Brazil is 12th, UK is 4th, Japan is 8th. 
+In Unemployment: Brazil is 2nd, UK is 15th, Japan is 12th.
+  PC1 is pretty heavily positively associated with GDP, Lifeexp, Oilcons, and Tel. 
+  PC2 is pretty heavily positively associated with Military Spending and Population, and strongly negatively associated with HIV and Unemployment.
+  Looking at the GDP, Life Expectancy, Oil Consumption, and Telephone Lines, Brazil is ranked 12th out of 15 for all categories, which explains why it is so strongly negatively associated with PC1. The UK is ranks 5th, 7th, 9th, and 4th, respectively, which supports its strong positive correlation with PC1. Japan ranks 3rd, 1st, 4th, and 8th, respectively, which explains why it is so strongly positively associated with PC1.
+  Looking at Military Spending and Population, Brazil is ranked 7th and 5th. The UK is ranked 9th and 11th. Japan is ranked 14th and 7th. Looking at HIV and Unemployment, Brazil is ranked 4th and 2nd. UK is ranked 10th and 15th. Japan is ranked 11th and 12th. 
+Brazil is ranked close to the center, for Military Spending and Population, which PC2 is highly positively correlated. Brazil is highly positively correlated with HIV and Unemployment, which PC2 is highly negatively associated with, therefore it makes sense that Brazil would be negatively associated with PC2. The UK is ranked in the bottom half for Military Spending and Population, and HIV and Unemployment, the first two which are positively correlated for PC2 and the last two which are negatively associated with PC2, therefore the value makes sense, as it is not highly positively associated. Japan is in the bottom half for Military Spending and Population, and for HIV and Unemployment, which supports the correlation for Japan and PC2, as the values average out.")
+```
+
+### Part 2.3 Content-based recommendation system
+### A20422621 --> User 65 -- User 1 is good user for an example
+
+### Building User Profile -- User 1
+```{r}
+movies <- as.data.frame(read.csv("movies.csv", row.names = 1))
+ratings <- as.data.frame(read.csv("ratings.csv", sep = ","))
+genres <- c("Action", "Adventure", "Animation", "Children", "Comedy", "Crime", "Documentary", "Drama", "Fantasy", "Film-Noir", "Horror", "IMAX", "Musical", "Mystery", "Romance", "Sci-Fi", "Thriller", "War", "Western", "(no genres listed)")
+user <- 1
+user_ratings <- ratings[ratings$userId == user,]
+watched <- user_ratings$movieId
+user_profile <- data.frame(matrix(0, length(watched), length(genres)), row.names = user_ratings$movieId)
+colnames(user_profile) <- genres
+
+for (row in 1:nrow(user_profile)) {
+  movie_id <- rownames(user_profile[row,])
+  boy <- levels(droplevels(movies[movie_id,2]))
+  movie_genres <- unlist(strsplit(boy, split="|", fixed = TRUE))
+  for (gene in 1:length(movie_genres)) {
+    user_profile[row, movie_genres[gene]] <- 1
+  }
+  rm(movie_id)
+  rm(boy)
+  rm(movie_genres)
+}
+
+user_profile_vector <- colSums(user_profile)/length(watched)
+
+```
+
+```{r}
+my.cosine <- function(x, y) {
+  return(sum(x*y)/(norm(x, type="2") * norm(y, type="2")))
+}
+```
+
+
+### Building Movie Profile -- User 1
+### For the movies 18, 47, 255, 269, 471, 445, 640, 680, 1589, 1562
+```{r}
+movies <- as.data.frame(read.csv("movies.csv", row.names = 1))
+selected = c(18, 47, 255, 269, 471, 445, 640, 680, 1589, 1562)
+movie_vectors <- data.frame(matrix(0, length(selected), length(genres)), row.names = selected)
+colnames(movie_vectors) <- genres
+
+for (row in 1:nrow(movie_vectors)) {
+  movie_nid <- rownames(movie_vectors[row,])
+  nboy <- levels(droplevels(movies[movie_nid,2]))
+  movie_ngenres <- unlist(strsplit(nboy, split="|", fixed = TRUE))
+  for (gene in 1:length(movie_ngenres)) {
+    movie_vectors[row, movie_ngenres[gene]] <- 1
+  }
+  rm(movie_nid)
+  rm(nboy)
+  rm(movie_ngenres)
+}
+
+res <- data.frame(matrix(0, length(selected), 3), row.names = selected)
+colnames(res)<-c("MovieId", "MovieName", "Similarity")
+
+movies_IDs<-rownames(movies)
+
+for (row in 1:length(selected)) {
+  res[row,"MovieId"]<-selected[row]
+  res[row,"MovieName"]<- levels(droplevels(movies[rownames(movie_vectors[row,]),1]))
+  res[row,"Similarity"]<-my.cosine(user_profile_vector, movie_vectors[row,])
+}
+
+result <- res[order(-res$Similarity),]
+print(result)
+rownames(result)<-c()
+print("User ID 65 chose the following 10 movies: 18, 47, 255, 269, 471, 445, 640, 680, 1589, 1562
+Of these, the following 5 movies are recommended:")
+head(result, 5)
+```
+
+### Building User Profile -- User 65
+```{r}
+movies <- as.data.frame(read.csv("movies.csv", row.names = 1))
+ratings <- as.data.frame(read.csv("ratings.csv", sep = ","))
+genres <- c("Action", "Adventure", "Animation", "Children", "Comedy", "Crime", "Documentary", "Drama", "Fantasy", "Film-Noir", "Horror", "IMAX", "Musical", "Mystery", "Romance", "Sci-Fi", "Thriller", "War", "Western", "(no genres listed)")
+user <- 65
+user_ratings <- ratings[ratings$userId == user,]
+watched <- user_ratings$movieId
+user_profile <- data.frame(matrix(0, length(watched), length(genres)), row.names = user_ratings$movieId)
+colnames(user_profile) <- genres
+
+for (row in 1:nrow(user_profile)) {
+  movie_id <- rownames(user_profile[row,])
+  boy <- levels(droplevels(movies[movie_id,2]))
+  movie_genres <- unlist(strsplit(boy, split="|", fixed = TRUE))
+  for (gene in 1:length(movie_genres)) {
+    user_profile[row, movie_genres[gene]] <- 1
+  }
+  rm(movie_id)
+  rm(boy)
+  rm(movie_genres)
+}
+
+user_profile_vector <- colSums(user_profile)/length(watched)
+
+```
+
+### Building Movie Profile -- User 65
+### For 10 random movies
+```{r}
+set.seed(1122)
+sel <- as.data.frame(rownames(as.data.frame(movies)))
+selec <- sample_n(sel,10)
+colnames(selec)<-c("ID")
+selected<-levels(droplevels(selec$ID))
+movie_vectors <- data.frame(matrix(0, length(selected), length(genres)), row.names = selected)
+colnames(movie_vectors) <- genres
+
+for (row in 1:nrow(movie_vectors)) {
+  movie_nid <- rownames(movie_vectors[row,])
+  nboy <- levels(droplevels(movies[movie_nid,2]))
+  movie_ngenres <- unlist(strsplit(nboy, split="|", fixed = TRUE))
+  for (gene in 1:length(movie_ngenres)) {
+    movie_vectors[row, movie_ngenres[gene]] <- 1
+  }
+  rm(movie_nid)
+  rm(nboy)
+  rm(movie_ngenres)
+}
+
+res <- data.frame(matrix(0, length(selected), 3), row.names = selected)
+colnames(res)<-c("MovieId", "MovieName", "Similarity")
+
+movies_IDs<-rownames(movies)
+
+for (row in 1:length(selected)) {
+  res[row,"MovieId"]<-selected[row]
+  #print(levels(droplevels(movies[rownames(movie_vectors[row,]),1])))
+  res[row,"MovieName"]<- levels(droplevels(movies[rownames(movie_vectors[row,]),1]))
+  res[row,"Similarity"]<-my.cosine(user_profile_vector, movie_vectors[row,])
+}
+
+result <- res[order(-res$Similarity),]
+
+rownames(result)<-c()
+print("User ID 65 chose the following 10 movies:")
+print(selected)
+print("Of these, the following 5 movies are recommended:")
+head(result, 5)
+```
+
+```{r}
+print(user_profile_vector)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
